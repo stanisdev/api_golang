@@ -7,12 +7,14 @@ import (
 
 type UserJWT struct {
 	ID uint `json:"id"`
+	UniqUserKey string `json:"uniq_user_key"`
 	jwt.StandardClaims
 }
 
-func CryptJWT(id uint) (string, error) {
+func CryptJWT(id uint, uKey string) (string, error) {
 	token := jwt.NewWithClaims(jwt.GetSigningMethod("HS256"), &UserJWT{
 		ID: id,
+		UniqUserKey: uKey,
 	})
 	tokenString, err := token.SignedString([]byte(viper.GetString("jwt.secret_key")))
 	if err != nil {

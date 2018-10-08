@@ -35,7 +35,7 @@ func (e *Env) UserLogin(c *gin.Context) {
 		wrongCred()
 		return
 	}
-	tokenString, err := services.CryptJWT(user.ID)
+	tokenString, err := services.CryptJWT(user.ID, user.UniqUserKey)
 	if (err != nil) {
 		c.JSON(200, gin.H{
 			"ok": false,

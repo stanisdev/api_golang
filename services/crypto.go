@@ -4,8 +4,8 @@ import(
 	"golang.org/x/crypto/bcrypt"
 	"math/rand"
 )
-
-var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890")
+// abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890
+var letters = []rune("fSNDtBFEb4YjgZu6iVq5cMCv2XIWLOTR1PrAKQHom7zw8se0GJ9kadnhUpylx3")
 
 func GetPasswordHash(password string) (string, error) {
 	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)

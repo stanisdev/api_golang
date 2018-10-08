@@ -34,6 +34,7 @@ func DatabaseMigrate() {
 	instance.AutoMigrate(&User{}) // Create User table
 
 	salt := services.GenerateRandomString(10)
+	uniqKey := services.GenerateRandomString(10)
 	hash, err := services.GetPasswordHash("pRCek5iFYm" + salt)
 	if (err != nil) {
 		panic(err)
@@ -41,7 +42,7 @@ func DatabaseMigrate() {
 	user := User{}
 	instance.Where(&User{Username: "mr.admin"}).Find(&user) // Create Admin record
 	if (user.ID < 1) {
-		admin := &User{Username: "mr.admin", Password: hash, Salt: salt, LastLogin: time.Now(), PasswordChanged: time.Now()}
+		admin := &User{Username: "mr.admin", Password: hash, Salt: salt, LastLogin: time.Now(), PasswordChanged: time.Now(), UniqUserKey: uniqKey}
 		if err := instance.Create(admin); err != nil {
 			fmt.Println("An error occurred while creating the \"Admin\" entry")
 			fmt.Println(err)
