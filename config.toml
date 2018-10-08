@@ -10,4 +10,4 @@ dbname = "affdb"
 port = 3305
 
 [jwt]
-secret_key = "BcPuC=N2Q#L$eP-Dz7gXqZ-u5YeyVG^YUD$h@fDWkh#*h3d6#kc_m-Jk%_@=WET4uW=_M9egzyf!_PHaPkb28=zc!!sNgS5V&8sf^JYkNew6bXu6!fFW86f3"
+secret_key = "SXm9V}9kmh4%&Q\B>[V;&fH2}y69>c2ER$_^3V_$4XAs_hS'~=S6\/q.`OP;$@emTa`cM[7?E?er`N-_zxSg`7,:zt2<}7`RX\T\'g%^=)j:e?#vcmB@9`&.pz9d>5U"
