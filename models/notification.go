@@ -99,9 +99,9 @@ func (dm *DbMethods) FindAllNotifications() *[]NotificationQuery {
 			n.link,
 			n.company_id,
 			n.created_at,
-			c.name company
+			"" AS name
 		`).
-		Joins("LEFT JOIN companies c ON n.company_id = c.id").
+		// Joins("LEFT JOIN companies c ON n.company_id = c.id").
 		Order("n.id ASC").
 		Scan(ntfs)
 
