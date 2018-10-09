@@ -16,6 +16,7 @@ type Env struct {
 }
 
 func Start() {
+	gin.SetMode(gin.ReleaseMode)
 	router := gin.Default()
 	router.Use(gin.Logger())
 	router.Use(gin.Recovery())
