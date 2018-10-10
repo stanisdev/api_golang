@@ -29,11 +29,22 @@ func SetDynamicConfig() {
 	}
 	rootDir = rootDir[0:len(rootDir)-4]
 	appDir := path.Join(rootDir, "src", "app")
+	uplPath := os.Getenv("UPLOADS_PATH")
+	subPath := os.Getenv("SUB_PATH")
+
+	if (len(uplPath) < 1) { // Or read from config file
+		uplPath = viper.GetString("environment.uploads_dir")
+	}
+	if (len(subPath) < 1) {
+		subPath = viper.GetString("environment.sub_path")
+	}
 
 	dynamicConfig = map[string]string{
 		"RootDir": rootDir,
 		"AppDir": appDir,
 		"UploadsDir": path.Join(appDir, "uploads"),
+		"UploadsPath": uplPath,
+		"SubPath": subPath,
 	}
 }
 

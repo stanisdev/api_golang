@@ -18,11 +18,12 @@ func invalidToken(c *gin.Context) {
 }
 
 func RequireAuthToken(c *gin.Context) {
-	publicUrls := []string{ "/user/login", "/notifications" }
-	currentUrl := c.Request.URL.Path
+	subPath := services.GetDynamicConfig()["SubPath"]
 	prefix := viper.GetString("environment.prefix")
+	publicUrls := []string{ subPath + prefix + "/user/login", subPath + "/notifications" }
+	currentUrl := c.Request.URL.Path
 	for _, url := range publicUrls {
-    if (prefix + url == currentUrl) {
+    if (url == currentUrl) {
 			c.Next()
 			return
 		}

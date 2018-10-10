@@ -21,7 +21,9 @@ func Start() {
 	router.Use(gin.Logger())
 	router.Use(gin.Recovery())
 	router.Use(middlewares.CORSMiddleware())
-	router.Static("/uploads", services.GetDynamicConfig()["UploadsDir"])
+
+	subPath := services.GetDynamicConfig()["SubPath"]
+	router.Static(subPath + "/uploads", services.GetDynamicConfig()["UploadsDir"])
 	router.Use(middlewares.RequireAuthToken)
 
 	router.NoRoute(func(c *gin.Context) {
@@ -34,7 +36,7 @@ func Start() {
 		db: models.GetConnection(),
 		DBMethods: models.GetDmInstance(),
 	}
-	prefix := viper.GetString("environment.prefix")
+	prefix := subPath + viper.GetString("environment.prefix")
 	user := router.Group(prefix + "/user")
 	{
 		user.POST("/login", env.UserLogin)
@@ -54,6 +56,6 @@ func Start() {
 	{
 		image.POST("/upload", env.ImageUpload)
 	}	
-	router.GET("/notifications", env.NotificationPublic)
+	router.GET(subPath + "/notifications", env.NotificationPublic)
 	router.Run(":" + viper.GetString("environment.port"))
 }

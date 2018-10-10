@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"app/models"
+	"app/services"
 	structs "app/structures"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -109,7 +110,7 @@ func (e *Env) NotificationPublic(c *gin.Context) {
 	for _, ntf := range *ntfs {
 		result = append(result, structs.NotificationPublic {
 			Id: ntf.ID,
-			Image: ntf.Image,
+			Image: services.GetDynamicConfig()["UploadsPath"] + "/" + ntf.Image,
 			Message: ntf.Message,
 			Header: ntf.Header,
 			Priority: ntf.Priority,

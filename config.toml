@@ -1,6 +1,8 @@
 [environment]
 port = 8080
 prefix = "/u8vd7ya2t3p"
+uploads_dir = "http://54.201.86.220/api/uploads"
+sub_path = "/api"
 
 [database]
 host = "localhost"
