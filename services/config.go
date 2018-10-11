@@ -9,26 +9,31 @@ import (
 )
 
 var dynamicConfig map[string]string
+var curDir string
 
-func ReadConfig() {
-	viper.SetConfigName("config")
-	viper.AddConfigPath("./src/app")
-	err := viper.ReadInConfig()
-	if err != nil {
-		panic(fmt.Errorf("Fatal error config file: %s \n", err))
-	}	
-}
-
-func SetDynamicConfig() {
-	rootDir, err := filepath.Abs(filepath.Dir(os.Args[0]))
+func DefineCurrentDir() {
+	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
 	if err != nil {
 		panic(err)
 	}
-	if (rootDir[len(rootDir)-4:] != "/bin") {
-		panic("Wrong env structure")
+	curDir = dir
+}
+
+func ReadConfig() {
+	DefineCurrentDir()
+	confPath := os.Getenv("CONFIG_PATH")
+	if len(confPath) < 1 || confPath == "*" {
+		confPath = curDir
 	}
-	rootDir = rootDir[0:len(rootDir)-4]
-	appDir := path.Join(rootDir, "src", "app")
+	viper.SetConfigName("config")
+	viper.AddConfigPath(confPath)
+	err := viper.ReadInConfig()
+	if err != nil {
+		panic(fmt.Errorf("Fatal error config file: %s \n", err))
+	}
+}
+
+func SetDynamicConfig() {
 	uplPath := os.Getenv("UPLOADS_PATH")
 	subPath := os.Getenv("SUB_PATH")
 
@@ -38,13 +43,16 @@ func SetDynamicConfig() {
 	if (len(subPath) < 1) {
 		subPath = viper.GetString("environment.sub_path")
 	}
-
+	uplDir := os.Getenv("UPLOADS_DIR") // Path to "uploads" dir
+	if (len(uplDir) < 1 || uplDir == "*") {
+		uplDir = curDir
+	}
+	
 	dynamicConfig = map[string]string{
-		"RootDir": rootDir,
-		"AppDir": appDir,
-		"UploadsDir": path.Join(appDir, "uploads"),
+		"UploadsDir": path.Join(uplDir, "uploads"),
 		"UploadsPath": uplPath,
 		"SubPath": subPath,
+		"CurrentDir": curDir,
 	}
 }
 

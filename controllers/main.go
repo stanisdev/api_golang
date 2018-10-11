@@ -7,7 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	"github.com/spf13/viper"
-	_ "fmt"
+	"fmt"
 )
 
 type Env struct {
@@ -55,7 +55,10 @@ func Start() {
 	image := router.Group(prefix + "/image")
 	{
 		image.POST("/upload", env.ImageUpload)
-	}	
+	}
 	router.GET(subPath + "/notifications", env.NotificationPublic)
-	router.Run(":" + viper.GetString("environment.port"))
+	port := viper.GetString("environment.port")
+	fmt.Println("App are listening port " + port)
+	
+	router.Run(":" + port)
 }
