@@ -6,6 +6,8 @@ import(
 	"github.com/jinzhu/gorm"
 	validator "github.com/asaskevich/govalidator"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
+	"math/rand"
+	"strconv"
 	"fmt"
 	"time"
 )
@@ -50,7 +52,7 @@ func DatabaseMigrate() {
 	}
 	instance.AutoMigrate(&Notification{}) // Create Notification table
 	instance.AutoMigrate(&Company{}) // Create Company table
-	instance.Model(&Notification{}).AddForeignKey("company_id", "companies(id)", "RESTRICT", "RESTRICT")
+	instance.Model(&Notification{}).AddForeignKey("company_id", "companies(id)", "SET NULL", "CASCADE")
 }
 
 func GetConnection() *gorm.DB {
@@ -64,4 +66,28 @@ func GetDmInstance() *DbMethods {
 func ValidateModel(modelInstance interface{}) bool {
 	_, err := validator.ValidateStruct(modelInstance)
 	return err == nil
+}
+
+func LoadFixtures() {
+	db := GetConnection()
+	publishersRaw := []string{ "Alibaba.com", "Flickr", "Instagram" }
+	for _, publisher := range publishersRaw {
+		db.Create(&Company{ Name: publisher })
+	}
+	publishers := []Company{}
+	db.Find(&publishers)
+
+	for a := 0; a <= 100; a++ {
+		_a := strconv.Itoa(a)
+		db.Create(&Notification{
+			Message: "Message " + _a,
+			Image: "Image" + _a,
+			Header: "Header" + _a,
+			Priority: 2,
+			Expired: time.Now(),
+			Button: "Button " + _a,
+			Link: "http://link" + _a,
+			CompanyID: publishers[rand.Intn(len(publishersRaw))].ID,
+		})
+	}
 }

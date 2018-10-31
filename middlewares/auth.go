@@ -7,6 +7,7 @@ import (
 	"github.com/spf13/viper"
 	"net/http"
 	"strings"
+	_ "fmt"
 )
 
 func invalidToken(c *gin.Context) {

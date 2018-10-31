@@ -15,7 +15,7 @@ type Notification struct {
 	Expired time.Time
 	Button string `gorm:"size:150;not null"valid:"required,length(1|150)"`
 	Link string `gorm:"size:250;not null"valid:"required,length(1|250)"`
-	CompanyID uint `gorm:"not null"valid:"required"`
+	CompanyID uint
 }
 
 type NotificationQuery struct {

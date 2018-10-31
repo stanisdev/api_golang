@@ -6,6 +6,7 @@ import (
 	"app/models"
 	"math/rand"
 	"time"
+	"os"
 )
 
 func init() {
@@ -17,5 +18,10 @@ func main() {
 	services.SetDynamicConfig()
 	models.DatabaseConnect()	
 	models.DatabaseMigrate()
-	controllers.Start()
+
+	if (len(os.Getenv("LOAD_FIXTURES")) > 0) {
+		models.LoadFixtures()
+	} else {
+		controllers.Start()
+	}
 }

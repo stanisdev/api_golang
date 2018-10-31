@@ -10,6 +10,9 @@ import (
 	"errors"
 )
 
+/**
+ * Image uploading
+ */
 func (e *Env) ImageUpload(c *gin.Context) {
 	file, header, err := c.Request.FormFile("image")
 	if (err != nil) {

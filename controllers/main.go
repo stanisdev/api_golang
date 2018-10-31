@@ -7,6 +7,10 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	"github.com/spf13/viper"
+	"net/http"
+	validator "github.com/asaskevich/govalidator"
+	"encoding/json"
+	"os"
 	"fmt"
 )
 
@@ -15,8 +19,19 @@ type Env struct {
 	DBMethods *models.DbMethods
 }
 
+func (e *Env) Json(w http.ResponseWriter, data map[string]interface{}) {
+	jsonOut, _ := json.Marshal(data)
+	w.Header().Set("Content-Type", "application/json")
+	fmt.Fprintf(w, string(jsonOut))
+}
+
+func (e *Env) ValidateStruct(structInstance interface{}) bool {
+	_, err := validator.ValidateStruct(structInstance)
+	return err == nil
+}
+
 func Start() {
-	gin.SetMode(gin.ReleaseMode)
+	// gin.SetMode(gin.ReleaseMode)
 	router := gin.Default()
 	router.Use(gin.Logger())
 	router.Use(gin.Recovery())
@@ -56,8 +71,17 @@ func Start() {
 	{
 		image.POST("/upload", env.ImageUpload)
 	}
+	publisher := router.Group(prefix + "/publisher")
+	{
+		publisher.POST("/create", env.PublisherCreate)
+	}
 	router.GET(subPath + "/notifications", env.NotificationPublic)
+
+	_port := os.Getenv("PORT")
 	port := viper.GetString("environment.port")
+	if (len(_port) > 0) {
+		port = _port
+	}
 	fmt.Println("App are listening port " + port)
 	
 	router.Run(":" + port)

@@ -9,6 +9,9 @@ import (
 	_ "fmt"
 )
 
+/**
+ * Login to panel
+ */
 func (e *Env) UserLogin(c *gin.Context) {
 	var login structs.UserLogin
 	c.BindJSON(&login)
@@ -53,6 +56,9 @@ func (e *Env) UserLogin(c *gin.Context) {
 	})
 }
 
+/**
+ * Get profile info
+ */
 func (e *Env) UserProfile(c *gin.Context) {
 	user := c.MustGet("user").(models.User)
 	c.JSON(200, gin.H{
@@ -66,6 +72,9 @@ func (e *Env) UserProfile(c *gin.Context) {
 	})
 }
 
+/**
+ * Change password
+ */
 func (e *Env) UserChangePassword(c *gin.Context) {
 	var chp structs.UserChangePassword
 	c.BindJSON(&chp)

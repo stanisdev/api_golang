@@ -9,6 +9,9 @@ import (
 	_ "fmt"
 )
 
+/**
+ * Get list of notifications for Panel
+ */
 func (e *Env) NotificationList(c *gin.Context) {
 	text := c.Query("text")
 	lmt := c.MustGet("limit").(int)
@@ -35,6 +38,9 @@ func (e *Env) NotificationList(c *gin.Context) {
 	})
 }
 
+/**
+ * Create notification
+ */
 func (e *Env) NotificationCreate(c *gin.Context) {
 	ntf := c.MustGet("notificationBlank").(*models.Notification)
 	e.db.Create(ntf)
@@ -43,6 +49,9 @@ func (e *Env) NotificationCreate(c *gin.Context) {
 	})
 }
 
+/**
+ * Update notification
+ */
 func (e *Env) NotificationUpdate(c *gin.Context) {
 	ntfQuery := c.MustGet("notification").(*models.NotificationQuery)
 	ntfBlank := c.MustGet("notificationBlank").(*models.Notification)
@@ -62,6 +71,9 @@ func (e *Env) NotificationUpdate(c *gin.Context) {
 	})
 }
 
+/**
+ * Remove notification
+ */
 func (e *Env) NotificationRemove(c *gin.Context) {
 	ntf := c.MustGet("notification").(*models.NotificationQuery)
 	e.db.Where("id = ?", ntf.ID).Limit(1).Unscoped().Delete(&models.Notification{})
@@ -76,6 +88,9 @@ func (e *Env) NotificationRemove(c *gin.Context) {
 	})
 }
 
+/**
+ * Find notification by ID
+ */
 func (e *Env) NotificationGetById(c *gin.Context) {
 	ntf := c.MustGet("notification").(*models.NotificationQuery)
 	c.JSON(200, gin.H{
@@ -95,6 +110,9 @@ func (e *Env) NotificationGetById(c *gin.Context) {
 	})
 }
 
+/**
+ * Find total count of notifications
+ */
 func (e *Env) NotificationCount(c *gin.Context) {
 	var count int
 	e.db.Model(&models.Notification{}).Count(&count)
@@ -104,6 +122,9 @@ func (e *Env) NotificationCount(c *gin.Context) {
 	})
 }
 
+/**
+ * Get list of notifications for public access
+ */
 func (e *Env) NotificationPublic(c *gin.Context) {
 	var result []structs.NotificationPublic
 	ntfs := models.GetDmInstance().FindAllNotifications()
