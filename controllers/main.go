@@ -30,6 +30,12 @@ func (e *Env) ValidateStruct(structInstance interface{}) bool {
 	return err == nil
 }
 
+func (e *Env) ServerError(c *gin.Context) {
+	c.JSON(http.StatusInternalServerError, gin.H{
+		"ok": false,
+	})
+}
+
 func Start() {
 	// gin.SetMode(gin.ReleaseMode)
 	router := gin.Default()
@@ -74,6 +80,7 @@ func Start() {
 	publisher := router.Group(prefix + "/publisher")
 	{
 		publisher.POST("/create", env.PublisherCreate)
+		publisher.PUT("/:id", middlewares.FindPublisherById, env.PublisherUpdate)
 	}
 	router.GET(subPath + "/notifications", env.NotificationPublic)
 

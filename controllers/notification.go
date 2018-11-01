@@ -56,7 +56,7 @@ func (e *Env) NotificationUpdate(c *gin.Context) {
 	ntfQuery := c.MustGet("notification").(*models.NotificationQuery)
 	ntfBlank := c.MustGet("notificationBlank").(*models.Notification)
 	ntfBlank.ID = ntfQuery.ID
-	ntfBlank.CreatedAt = ntfQuery.CreatedAt 
+	ntfBlank.CreatedAt = ntfQuery.CreatedAt
 
 	e.db.Save(&ntfBlank)
 

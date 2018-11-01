@@ -7,6 +7,7 @@ import(
 	validator "github.com/asaskevich/govalidator"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"math/rand"
+	"strings"
 	"strconv"
 	"fmt"
 	"time"
@@ -90,4 +91,19 @@ func LoadFixtures() {
 			CompanyID: publishers[rand.Intn(len(publishersRaw))].ID,
 		})
 	}
+}
+
+func HasError(errors []error) bool {
+	if (len(errors) < 1) {
+		return false
+	}
+	for _, err := range errors {
+		errValue := strings.ToLower(err.Error())
+		if (errValue == "record not found") {
+			return false
+		} else {
+			fmt.Println(err.Error())
+		}
+	}
+	return true
 }

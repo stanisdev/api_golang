@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	_ "app/models"
+	"app/models"
 	"github.com/gin-gonic/gin"
 	structs "app/structures"
 	"net/http"
@@ -20,8 +20,32 @@ func (e *Env) PublisherCreate(c *gin.Context) {
 		})
 		return
 	}
+	company := models.Company{}
+	result := e.db.Where("name = ?", publ.Name).First(&company).GetErrors()
+	if (models.HasError(result)) {
+		e.ServerError(c)
+		return
+	}
+	if (company.ID > 0) { // Publisher exists
+		c.JSON(http.StatusConflict, gin.H{
+			"ok": false,
+		})
+		return
+	}
+	newCompany := &models.Company{ 
+		Name: publ.Name, 
+	}
+	result = e.db.Create(newCompany).GetErrors()
+	if (models.HasError(result)) {
+		e.ServerError(c)
+		return
+	}
 	e.Json(c.Writer, map[string]interface{} {
 		"ok": true,
+		"payload": gin.H{
+			"id": newCompany.ID,
+			"name": newCompany.Name,
+		},
 	})
 }
 
@@ -29,5 +53,7 @@ func (e *Env) PublisherCreate(c *gin.Context) {
  * Edit publisher
  */
 func (e *Env) PublisherUpdate(c *gin.Context) {
-
+	e.Json(c.Writer, map[string]interface{} {
+		"ok": true,
+	})
 }
