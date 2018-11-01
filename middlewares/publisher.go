@@ -2,20 +2,24 @@ package middlewares
 
 import (
 	"app/models"
+	"app/services"
 	"github.com/gin-gonic/gin"
-	"net/http"
+	"strconv"
 	_ "fmt"
 )
 
 func FindPublisherById(c *gin.Context) {
 	id := c.Param("id")
+	if _, err := strconv.ParseInt(id, 10, 32); err != nil {
+		services.WrongUrlParams(c)
+		c.Abort()
+		return
+	}
 	publisher := &models.Company{}
 	models.GetConnection().Where("id = ?", id).First(publisher)
 
 	if (publisher.ID < 1) {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"ok": false,
-		})
+		services.WrongUrlParams(c)
 		c.Abort()
 		return
 	}

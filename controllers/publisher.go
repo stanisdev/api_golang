@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"app/models"
+	"app/services"
 	"github.com/gin-gonic/gin"
 	structs "app/structures"
 	"net/http"
@@ -53,6 +54,19 @@ func (e *Env) PublisherCreate(c *gin.Context) {
  * Edit publisher
  */
 func (e *Env) PublisherUpdate(c *gin.Context) {
+	var publ structs.Publisher
+	c.BindJSON(&publ)
+	if (!e.ValidateStruct(publ)) {
+		services.WrongPostData(c)
+		return
+	}
+	publisher := c.MustGet("publisher").(*models.Company)
+	publisher.Name = publ.Name
+	result := e.db.Save(&publisher).GetErrors()
+	if (models.HasError(result)) {
+		e.ServerError(c)
+		return
+	}
 	e.Json(c.Writer, map[string]interface{} {
 		"ok": true,
 	})
