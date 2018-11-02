@@ -11,5 +11,9 @@ password = "root"
 dbname = "affdb"
 port = 3305
 
+[limiter_per_page]
+notifications = 50
+publishers = 50
+
 [jwt]
 secret_key = "GUNP3Dqs5VFtNDrWnTGtBC4Ph7vYV8SrFMBeeVVJgXkbuVdUCub97BmDkjzG9Q8XNfTEwD4yQEgTYmCQ7Mc6y4pUSX9Gmft2M7CZ2SfDEY2Zp2fS79gD19RUAWEnM2d"

@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	structs "app/structures"
 	"net/http"
-	"fmt"
+	_ "fmt"
 )
 
 /**
@@ -92,8 +92,12 @@ func (e *Env) PublisherRemove(c *gin.Context) {
  * List of publishers
  */
  func (e *Env) PublisherList(c *gin.Context) {
+	limit := c.MustGet("limit").(int)
+	offset := c.MustGet("offset").(int)
+	limit = services.LimitRestriction(limit, "publishers")
+
 	publishers := []models.Company{}
-	result := e.db.Find(&publishers).GetErrors()
+	result := e.db.Offset(offset).Limit(limit).Find(&publishers).GetErrors()
 	if (models.HasError(result)) {
 		e.ServerError(c)
 		return
@@ -109,9 +113,29 @@ func (e *Env) PublisherRemove(c *gin.Context) {
 	for _, publisher := range publishers {
 		ids = append(ids, publisher.ID)
 	}
-	fmt.Println(ids)
-
+	notifCounts, queryResult := models.GetDmInstance().CountNotificationsByPublishers(ids)
+	if (models.HasError(queryResult)) {
+		e.ServerError(c)
+		return
+	}
+	var response []map[string]interface{}
+	for _, publisher := range publishers {
+		var ntfCount int
+		var publisherId = int(publisher.ID)
+		for _, notifCount := range *notifCounts {
+			if (notifCount.PublisherId == publisherId) {
+				ntfCount = notifCount.Total
+			}
+		}
+		element := map[string]interface{}{ 
+			"name": publisher.Name,
+			"id": publisher.ID,
+			"notifications_count": ntfCount,
+		}
+		response = append(response, element)
+	}
 	e.Json(c.Writer, map[string]interface{} {
 		"ok": true,
+		"payload": response,
 	})
 }
