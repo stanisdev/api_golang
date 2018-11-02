@@ -17,45 +17,39 @@ type Notification struct {
 	Expired string `json:"expired"`
 	Button string `json:"button"`
 	Link string `json:"link"`
-	Company string `json:"company"`
+	PublisherId string `json:"publisher_id"`
 }
 
 func ValidateNotification(c *gin.Context) {
 	var ntf Notification
+	var pubId int
+
 	c.BindJSON(&ntf)
 
-	cmp := &models.Company{
-		Name: ntf.Company,
-	}
-	if (!models.ValidateModel(cmp)) {
+	if _pubId, err := strconv.Atoi(ntf.PublisherId); err != nil {
 		services.WrongPostData(c)
-		c.Abort()
+		return
+	} else {
+		pubId = _pubId
+	}
+
+	publ := &models.Company{}
+	models.GetConnection().Where("id = ?", pubId).First(&publ) // Find publisher by ID
+	if (publ.ID < 1) {
+		services.WrongPostData(c)
 		return
 	}
-	exCmp := models.Company{}
-	models.GetConnection().Where("name = ?", cmp.Name).First(&exCmp)
-
-	var cmpId uint
-	if (exCmp.ID < 1) { // No such company, let's create it
-		models.GetConnection().Create(&cmp)
-		cmpId = cmp.ID
-	} else {
-		cmpId = exCmp.ID
-	}
-
-	exp, err0 := time.Parse("2006/01/02", ntf.Expired) // Parse exppired data
-	if (err0 != nil) {
+	exp, err0 := time.Parse("2006/01/02", ntf.Expired) // Parse expired data
+	if err0 != nil {
 		services.WrongPostData(c)
-		c.Abort()
 		return
 	}
 	prior, err1 := strconv.ParseUint(ntf.Priority, 10, 32)
 	if err1 != nil {
 		services.WrongPostData(c)
-		c.Abort()
 		return
 	}
-	ntfInstance := &models.Notification{ // Creating Notification
+	ntfInstance := &models.Notification { // Creating Notification
 		Message: ntf.Message,
 		Image: ntf.Image,
 		Header: ntf.Header,
@@ -63,11 +57,11 @@ func ValidateNotification(c *gin.Context) {
 		Expired: exp,
 		Button: ntf.Button,
 		Link: ntf.Link,
-		CompanyID: cmpId,
+		CompanyID: uint(pubId),
 	}
+	
 	if (!models.ValidateModel(ntfInstance)) {
 		services.WrongPostData(c)
-		c.Abort()
 		return
 	}
 	c.Set("notificationBlank", ntfInstance)

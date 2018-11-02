@@ -11,6 +11,7 @@ func WrongPostData(c *gin.Context) {
 		"ok": false,
 		"message": "Wrong post data",
 	})
+	c.Abort()
 }
 
 func WrongUrlParams(c *gin.Context) {

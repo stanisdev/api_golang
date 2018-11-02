@@ -43,7 +43,11 @@ func (e *Env) NotificationList(c *gin.Context) {
  */
 func (e *Env) NotificationCreate(c *gin.Context) {
 	ntf := c.MustGet("notificationBlank").(*models.Notification)
-	e.db.Create(ntf)
+	result := e.db.Create(ntf).GetErrors()
+	if (models.HasError(result)) {
+		e.ServerError(c)
+		return
+	}
 	c.JSON(200, gin.H{
 		"ok": true,
 	})
