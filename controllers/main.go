@@ -81,6 +81,8 @@ func Start() {
 	{
 		publisher.POST("/create", env.PublisherCreate)
 		publisher.PUT("/:id", middlewares.FindPublisherById, env.PublisherUpdate)
+		publisher.GET("/delete/:id", middlewares.FindPublisherById, env.PublisherRemove)
+		publisher.GET("/list", env.PublisherList)
 	}
 	router.GET(subPath + "/notifications", env.NotificationPublic)
 

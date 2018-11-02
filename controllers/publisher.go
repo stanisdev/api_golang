@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	structs "app/structures"
 	"net/http"
-	_ "fmt"
+	"fmt"
 )
 
 /**
@@ -67,6 +67,50 @@ func (e *Env) PublisherUpdate(c *gin.Context) {
 		e.ServerError(c)
 		return
 	}
+	e.Json(c.Writer, map[string]interface{} {
+		"ok": true,
+	})
+}
+
+/**
+ * Remove publisher
+ */
+func (e *Env) PublisherRemove(c *gin.Context) {
+	publisher := c.MustGet("publisher").(*models.Company)
+	result := e.db.Where("name = ?", publisher.Name).Limit(1).Unscoped().Delete(&models.Company{}).GetErrors()
+
+	if (models.HasError(result)) {
+		e.ServerError(c)
+		return
+	}
+	e.Json(c.Writer, map[string]interface{} {
+		"ok": true,
+	})
+}
+
+/**
+ * List of publishers
+ */
+ func (e *Env) PublisherList(c *gin.Context) {
+	publishers := []models.Company{}
+	result := e.db.Find(&publishers).GetErrors()
+	if (models.HasError(result)) {
+		e.ServerError(c)
+		return
+	}
+	if (len(publishers) < 1) { // No publishers found
+		e.Json(c.Writer, map[string]interface{} {
+			"ok": true,
+			"payload": []string{},
+		})
+		return
+	}
+	var ids []uint
+	for _, publisher := range publishers {
+		ids = append(ids, publisher.ID)
+	}
+	fmt.Println(ids)
+
 	e.Json(c.Writer, map[string]interface{} {
 		"ok": true,
 	})
