@@ -83,6 +83,8 @@ func Start() {
 		publisher.PUT("/:id", middlewares.FindPublisherById, env.PublisherUpdate)
 		publisher.GET("/delete/:id", middlewares.FindPublisherById, env.PublisherRemove)
 		publisher.GET("/list", middlewares.LimitOffset, env.PublisherList)
+		publisher.GET("/count", env.PublisherCount)
+		publisher.GET("/get/:id", middlewares.FindPublisherById, env.PublisherGetById)
 	}
 	router.GET(subPath + "/notifications", env.NotificationPublic)
 

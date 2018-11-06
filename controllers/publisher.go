@@ -139,3 +139,29 @@ func (e *Env) PublisherRemove(c *gin.Context) {
 		"payload": response,
 	})
 }
+
+/**
+ * Find total count of publishers
+ */
+func (e *Env) PublisherCount(c *gin.Context) {
+	var count int
+	e.db.Model(&models.Company{}).Count(&count)
+	c.JSON(200, gin.H{
+		"ok": true,
+		"payload": count,
+	})
+}
+
+/**
+ * Get publisher by ID
+ */
+func (e *Env) PublisherGetById(c *gin.Context) {
+	publisher := c.MustGet("publisher").(*models.Company)
+	c.JSON(200, gin.H{
+		"ok": true,
+		"payload": gin.H{
+			"id": publisher.ID,
+			"name": publisher.Name,
+		},
+	})
+}
