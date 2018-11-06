@@ -124,8 +124,11 @@ func (e *Env) NotificationGetById(c *gin.Context) {
  * Find total count of notifications
  */
 func (e *Env) NotificationCount(c *gin.Context) {
-	var count int
-	e.db.Model(&models.Notification{}).Count(&count)
+	var pubId int
+	if pId, err := strconv.Atoi(c.Query("pub")); err == nil {
+		pubId = pId
+	}
+	count, _ := models.GetDmInstance().CountNotifications(pubId)
 	c.JSON(200, gin.H{
 		"ok": true,
 		"payload": count,

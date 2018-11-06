@@ -37,19 +37,7 @@ func (n Notification) GetExpiredForAll() string {
 func (dm *DbMethods) FindNotificationById(id uint) *NotificationQuery {
 	ntf := &NotificationQuery{}
 	dm.DB.Table("notifications n").
-		Select(`
-			n.id,
-			n.message,
-			n.image,
-			n.header,
-			n.priority,
-			n.expired,
-			n.button,
-			n.link,
-			n.company_id,
-			n.created_at,
-			c.name company
-		`).
+		Select(getSelectFields()).
 		Joins("LEFT JOIN companies c ON n.company_id = c.id").
 		Where("n.id = ?", id).
 		Order("n.id DESC").
@@ -61,27 +49,26 @@ func (dm *DbMethods) FindNotificationById(id uint) *NotificationQuery {
 func (dm *DbMethods) FindNotifications(message string, limit int, offset int, publisherId int) *[]NotificationQuery {
 	ntfs := &[]NotificationQuery{}
 	like := "%" + message + "%"
-	dm.DB.Table("notifications n").
-		Select(`
-			n.id,
-			n.message,
-			n.image,
-			n.header,
-			n.priority,
-			n.expired,
-			n.button,
-			n.link,
-			n.company_id,
-			n.created_at,
-			c.name company
-		`).
-		Joins("LEFT JOIN companies c ON n.company_id = c.id").
-		Where("n.message LIKE ?", like).
-		Order("n.id ASC").
-		Limit(limit).
-		Offset(offset).
-		Scan(ntfs)
-
+	if (publisherId > 0) {
+		dm.DB.Table("notifications n").
+			Select(getSelectFields()).
+			Joins("INNER JOIN companies c ON n.company_id = c.id").
+			Where("n.message LIKE ?", like).
+			Where("c.id = ?", publisherId).
+			Order("n.id ASC").
+			Limit(limit).
+			Offset(offset).
+			Scan(ntfs)
+	} else {
+		dm.DB.Table("notifications n").
+			Select(getSelectFields()).
+			Joins("LEFT JOIN companies c ON n.company_id = c.id").
+			Where("n.message LIKE ?", like).
+			Order("n.id ASC").
+			Limit(limit).
+			Offset(offset).
+			Scan(ntfs)
+	}
 	return ntfs
 }
 
@@ -106,4 +93,35 @@ func (dm *DbMethods) FindAllNotifications() *[]NotificationQuery {
 		Scan(ntfs)
 
 	return ntfs
+}
+
+func (dm *DbMethods) CountNotifications(publisherId int) (int, error) {
+	var count int
+	if (publisherId < 1) {
+		dm.DB.
+			Model(&Notification{}).
+			Count(&count)
+	} else {
+		dm.DB.
+			Model(&Notification{}).
+			Where("company_id = ?", publisherId).
+			Count(&count)
+	}
+	return count, nil
+}
+
+func getSelectFields() string {
+	return `
+		n.id,
+		n.message,
+		n.image,
+		n.header,
+		n.priority,
+		n.expired,
+		n.button,
+		n.link,
+		n.company_id,
+		n.created_at,
+		c.name company
+	`
 }
