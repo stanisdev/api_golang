@@ -6,6 +6,7 @@ import (
 	structs "app/structures"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"strconv"
 	_ "fmt"
 )
 
@@ -16,8 +17,12 @@ func (e *Env) NotificationList(c *gin.Context) {
 	text := c.Query("text")
 	lmt := c.MustGet("limit").(int)
 	ofst := c.MustGet("offset").(int)
+	var pubId int
+	if p, err := strconv.Atoi(c.Query("pub")); err == nil {
+		pubId = p
+	}
 	
-	ntfs := models.GetDmInstance().FindNotifications(text, lmt, ofst)
+	ntfs := models.GetDmInstance().FindNotifications(text, lmt, ofst, pubId)
 	var result []structs.NotificationList
 	var msg string
 	for _, ntf := range *ntfs {
@@ -30,6 +35,7 @@ func (e *Env) NotificationList(c *gin.Context) {
 			Message: msg,
 			Expired: ntf.Expired.Format("Jan 2 2006"),
 			Link: ntf.Link,
+			Company: ntf.Company,
 		})
 	}
 	c.JSON(http.StatusOK, gin.H{

@@ -58,7 +58,7 @@ func (dm *DbMethods) FindNotificationById(id uint) *NotificationQuery {
 	return ntf
 }
 
-func (dm *DbMethods) FindNotifications(message string, limit int, offset int) *[]NotificationQuery {
+func (dm *DbMethods) FindNotifications(message string, limit int, offset int, publisherId int) *[]NotificationQuery {
 	ntfs := &[]NotificationQuery{}
 	like := "%" + message + "%"
 	dm.DB.Table("notifications n").

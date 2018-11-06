@@ -80,7 +80,7 @@ func Start() {
 	publisher := router.Group(prefix + "/publisher")
 	{
 		publisher.POST("/create", env.PublisherCreate)
-		publisher.PUT("/:id", middlewares.FindPublisherById, env.PublisherUpdate)
+		publisher.POST("/edit/:id", middlewares.FindPublisherById, env.PublisherUpdate)
 		publisher.GET("/delete/:id", middlewares.FindPublisherById, env.PublisherRemove)
 		publisher.GET("/list", middlewares.LimitOffset, env.PublisherList)
 		publisher.GET("/count", env.PublisherCount)

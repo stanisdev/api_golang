@@ -61,8 +61,29 @@ func (e *Env) PublisherUpdate(c *gin.Context) {
 		return
 	}
 	publisher := c.MustGet("publisher").(*models.Company)
-	publisher.Name = publ.Name
-	result := e.db.Save(&publisher).GetErrors()
+	if (publisher.Name == publ.Name) {
+		e.Json(c.Writer, map[string]interface{} {
+			"ok": true,
+		})
+		return
+	}
+	_publ := &models.Company{} // Check whether such a publisher name already exists
+	result := e.db.Where("name = ?", publ.Name).First(&_publ).GetErrors()
+	if (models.HasError(result)) {
+		e.ServerError(c)
+		return
+	}
+	if (_publ.ID > 0) {
+		c.JSON(200, gin.H{
+			"ok": false,
+			"errors": gin.H{
+				"name": "A company with this name already exists",
+			},
+		})
+		return
+	}
+	publisher.Name = publ.Name // Update
+	result = e.db.Save(&publisher).GetErrors()
 	if (models.HasError(result)) {
 		e.ServerError(c)
 		return
