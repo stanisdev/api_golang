@@ -8,3 +8,8 @@ type NotificationsCount struct {
 	Total int
 	PublisherId int
 }
+
+type PlainPublisher struct {
+	Id uint `json:"id"`
+	Name string `json:"name"`
+}

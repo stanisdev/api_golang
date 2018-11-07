@@ -85,6 +85,7 @@ func Start() {
 		publisher.GET("/list", middlewares.LimitOffset, env.PublisherList)
 		publisher.GET("/count", env.PublisherCount)
 		publisher.GET("/get/:id", middlewares.FindPublisherById, env.PublisherGetById)
+		publisher.GET("/plain_list", env.PublisherPlainList)
 	}
 	router.GET(subPath + "/notifications", env.NotificationPublic)
 

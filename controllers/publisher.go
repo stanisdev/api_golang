@@ -186,3 +186,26 @@ func (e *Env) PublisherGetById(c *gin.Context) {
 		},
 	})
 }
+
+/**
+ * Plain list of publishers
+ */
+func (e *Env) PublisherPlainList(c *gin.Context) {
+	publishers := []models.Company{}
+	result := e.db.Find(&publishers).GetErrors()
+	if (models.HasError(result)) {
+		e.ServerError(c)
+		return
+	}
+	payload := []structs.PlainPublisher{}
+	for _, publisher := range publishers {
+		payload = append(payload, structs.PlainPublisher{
+			Id: publisher.ID,
+			Name: publisher.Name,
+		})
+	}
+	e.Json(c.Writer, map[string]interface{} {
+		"ok": true,
+		"payload": payload,
+	})
+}
