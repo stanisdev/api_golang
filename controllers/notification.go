@@ -7,7 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
-	_ "fmt"
+	_"fmt"
 )
 
 /**
@@ -153,8 +153,5 @@ func (e *Env) NotificationPublic(c *gin.Context) {
 			Link: ntf.Link,
 		})
 	}
-	c.JSON(200, gin.H{
-		"ok": true,
-		"payload": result,
-	})
+	services.JSONgoesToHTML(c ,result)
 }
